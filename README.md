@@ -18,19 +18,22 @@ A React-based programmatic video framework. Write video compositions as React co
 
 ```bash
 # Create a new project
-bun run packages/cli/src/index.ts create my-video
+bunx @vibeo/cli create my-video
 
 # Or from a template
-bun run packages/cli/src/index.ts create my-video --template audio-reactive
+bunx @vibeo/cli create my-video --template audio-reactive
 
 cd my-video
 bun install
 
 # Preview in browser
-bun run dev
+bunx @vibeo/cli preview --entry src/index.tsx
 
 # Render to video
-bun run build
+bunx @vibeo/cli render --entry src/index.tsx --composition MyComp --output out.mp4
+
+# List compositions
+bunx @vibeo/cli list --entry src/index.tsx
 ```
 
 ### Templates
@@ -332,16 +335,16 @@ const opacity = interpolate(frame, [0, 30], [0, 1], {
 
 ```bash
 # Create a new project
-vibeo create <name> [--template basic|audio-reactive|transitions|subtitles]
+bunx @vibeo/cli create <name> [--template basic|audio-reactive|transitions|subtitles]
 
 # Preview in browser with controls
-vibeo preview --entry src/index.tsx [--port 3000]
+bunx @vibeo/cli preview --entry src/index.tsx [--port 3000]
 
 # Render to video file
-vibeo render --entry src/index.tsx --composition MyComp [--output out.mp4] [--codec h264|h265|vp9|prores] [--frames 0-100] [--concurrency 4]
+bunx @vibeo/cli render --entry src/index.tsx --composition MyComp [--output out.mp4] [--codec h264|h265|vp9|prores] [--frames 0-100] [--concurrency 4]
 
 # List registered compositions
-vibeo list --entry src/index.tsx
+bunx @vibeo/cli list --entry src/index.tsx
 ```
 
 ## License
