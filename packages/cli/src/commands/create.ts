@@ -246,6 +246,7 @@ export async function createProject(
       dev: "bun vibeo preview --entry src/index.tsx",
       build: "bun vibeo render --entry src/index.tsx",
       list: "bun vibeo list --entry src/index.tsx",
+      editor: "bun vibeo editor --entry src/index.tsx",
       typecheck: "bunx tsc --noEmit",
     },
     dependencies: {

@@ -27,7 +27,9 @@
       "@vibeo/cli": ["./packages/cli/src/index.ts"],
       "@vibeo/cli/*": ["./packages/cli/src/*"],
       "@vibeo/extras": ["./packages/extras/src/index.ts"],
-      "@vibeo/extras/*": ["./packages/extras/src/*"]
+      "@vibeo/extras/*": ["./packages/extras/src/*"],
+      "@vibeo/editor": ["./packages/editor/src/index.ts"],
+      "@vibeo/editor/*": ["./packages/editor/src/*"]
     }
   },
   "include": ["packages/*/src", "examples"]

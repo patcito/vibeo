@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "paths": {
+      "@vibeo/core": ["../core/src/index.ts"],
+      "@vibeo/core/*": ["../core/src/*"],
+      "@vibeo/audio": ["../audio/src/index.ts"],
+      "@vibeo/audio/*": ["../audio/src/*"],
+      "@vibeo/player": ["../player/src/index.ts"],
+      "@vibeo/player/*": ["../player/src/*"],
+      "@vibeo/editor": ["./src/index.ts"],
+      "@vibeo/editor/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}

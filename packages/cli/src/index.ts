@@ -6,6 +6,7 @@ import { startPreview } from "./commands/preview.js";
 import { listCompositions } from "./commands/list.js";
 import { renderVideo } from "./commands/render.js";
 import { installSkills } from "./commands/install-skills.js";
+import { startEditor } from "./commands/editor.js";
 
 const cli = Cli.create("vibeo", {
   description: "React-based programmatic video framework CLI",
@@ -105,6 +106,20 @@ cli.command("list", {
   async run(c) {
     const compositions = await listCompositions(resolve(c.options.entry));
     return { compositions };
+  },
+});
+
+cli.command("editor", {
+  description: "Open the visual video editor in the browser",
+  options: z.object({
+    entry: z.string().describe("Path to the root file with compositions"),
+    port: z.number().default(3001).describe("Port for the editor server"),
+  }),
+  examples: [
+    { options: { entry: "src/index.tsx" }, description: "Open editor on default port" },
+  ],
+  async run(c) {
+    await startEditor(resolve(c.options.entry), c.options.port);
   },
 });
 

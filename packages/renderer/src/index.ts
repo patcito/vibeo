@@ -14,7 +14,7 @@ export type {
 export { launchBrowser, closeBrowser, createPage } from "./browser.js";
 
 // Bundler
-export { bundle } from "./bundler.js";
+export { bundle, bundleForEditor } from "./bundler.js";
 
 // Frame navigation
 export { seekToFrame, loadBundle } from "./seek-to-frame.js";
