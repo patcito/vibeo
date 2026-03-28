@@ -347,6 +347,33 @@ bunx @vibeo/cli render --entry src/index.tsx --composition MyComp [--output out.
 bunx @vibeo/cli list --entry src/index.tsx
 ```
 
+## LLM & Agent Integration
+
+Vibeo's CLI is built with [incur](https://github.com/wevm/incur), making it natively discoverable by AI agents.
+
+```bash
+# Get an LLM-readable summary of all commands
+bunx @vibeo/cli --llms
+
+# Get the full manifest with schemas and examples
+bunx @vibeo/cli --llms-full
+
+# Get JSON Schema for any command
+bunx @vibeo/cli render --schema
+
+# Run as an MCP server
+bunx @vibeo/cli --mcp
+
+# Sync skill files for agent discovery
+bunx @vibeo/cli skills add
+
+# Generate shell completions
+bunx @vibeo/cli completions
+
+# Output as JSON, YAML, or Markdown
+bunx @vibeo/cli list --entry src/index.tsx --format json
+```
+
 ## License
 
 MIT
