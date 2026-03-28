@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 
 // ---------------------------------------------------------------------------
-// Embedded templates (so `create` works from npm without the examples/ dir)
+// Embedded templates
 // ---------------------------------------------------------------------------
 
 const TEMPLATE_BASIC = `import React from "react";
@@ -214,112 +214,31 @@ export function Root() {
 // ---------------------------------------------------------------------------
 
 const TEMPLATES: Record<string, { description: string; source: string }> = {
-  basic: {
-    description: "Minimal composition with text animation and two scenes",
-    source: TEMPLATE_BASIC,
-  },
-  "audio-reactive": {
-    description: "Audio visualization with frequency bars and amplitude-driven effects",
-    source: TEMPLATE_AUDIO_REACTIVE,
-  },
-  transitions: {
-    description: "Scene transitions (fade, slide) between multiple scenes",
-    source: TEMPLATE_TRANSITIONS,
-  },
-  subtitles: {
-    description: "Video with SRT subtitle overlay",
-    source: TEMPLATE_SUBTITLES,
-  },
+  basic: { description: "Minimal composition with text animation and two scenes", source: TEMPLATE_BASIC },
+  "audio-reactive": { description: "Audio visualization with frequency bars", source: TEMPLATE_AUDIO_REACTIVE },
+  transitions: { description: "Scene transitions (fade, slide)", source: TEMPLATE_TRANSITIONS },
+  subtitles: { description: "Video with SRT subtitle overlay", source: TEMPLATE_SUBTITLES },
 };
 
-interface CreateArgs {
-  name: string;
-  template: string;
-}
+export const TEMPLATE_NAMES = Object.keys(TEMPLATES);
 
-function parseArgs(args: string[]): CreateArgs {
-  const result: CreateArgs = { name: "", template: "basic" };
+export async function createProject(
+  name: string,
+  template: string,
+): Promise<{ project: string; template: string; files: string[] }> {
+  const tmpl = TEMPLATES[template];
+  if (!tmpl) throw new Error(`Unknown template: ${template}`);
 
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i]!;
-    const next = args[i + 1];
+  const projectDir = resolve(name);
+  if (existsSync(projectDir)) throw new Error(`Directory "${name}" already exists`);
 
-    if (arg === "--template" && next) {
-      result.template = next;
-      i++;
-    } else if (arg.startsWith("--template=")) {
-      result.template = arg.slice("--template=".length);
-    } else if (arg === "--help" || arg === "-h") {
-      printHelp();
-      process.exit(0);
-    } else if (!arg.startsWith("-") && !result.name) {
-      result.name = arg;
-    }
-  }
-
-  return result;
-}
-
-function printHelp(): void {
-  console.log(`
-vibeo create - Create a new Vibeo project
-
-Usage:
-  vibeo create <project-name> [options]
-
-Options:
-  --template <name>   Template to use (default: basic)
-  --help              Show this help
-
-Templates:`);
-
-  for (const [name, { description }] of Object.entries(TEMPLATES)) {
-    console.log(`  ${name.padEnd(18)} ${description}`);
-  }
-
-  console.log(`
-Examples:
-  vibeo create my-video
-  vibeo create music-viz --template audio-reactive
-  vibeo create intro --template transitions
-`);
-}
-
-export async function createCommand(args: string[]): Promise<void> {
-  const parsed = parseArgs(args);
-
-  if (!parsed.name) {
-    console.error("Error: project name is required\n");
-    printHelp();
-    process.exit(1);
-  }
-
-  const template = TEMPLATES[parsed.template];
-  if (!template) {
-    console.error(`Error: unknown template "${parsed.template}"`);
-    console.error(`Available: ${Object.keys(TEMPLATES).join(", ")}`);
-    process.exit(1);
-  }
-
-  const projectDir = resolve(parsed.name);
-  if (existsSync(projectDir)) {
-    console.error(`Error: directory "${parsed.name}" already exists`);
-    process.exit(1);
-  }
-
-  console.log(`\nCreating Vibeo project: ${parsed.name}`);
-  console.log(`Template: ${parsed.template}\n`);
-
-  // Create project structure
   await mkdir(join(projectDir, "src"), { recursive: true });
   await mkdir(join(projectDir, "public"), { recursive: true });
 
-  // Write template source
-  await writeFile(join(projectDir, "src", "index.tsx"), template.source);
+  await writeFile(join(projectDir, "src", "index.tsx"), tmpl.source);
 
-  // Write package.json
   const pkg = {
-    name: parsed.name,
+    name,
     version: "0.0.1",
     private: true,
     type: "module",
@@ -347,7 +266,6 @@ export async function createCommand(args: string[]): Promise<void> {
   };
   await writeFile(join(projectDir, "package.json"), JSON.stringify(pkg, null, 2) + "\n");
 
-  // Write tsconfig.json
   const tsconfig = {
     compilerOptions: {
       target: "ES2022",
@@ -366,29 +284,8 @@ export async function createCommand(args: string[]): Promise<void> {
   };
   await writeFile(join(projectDir, "tsconfig.json"), JSON.stringify(tsconfig, null, 2) + "\n");
 
-  // Write .gitignore
-  await writeFile(
-    join(projectDir, ".gitignore"),
-    `node_modules/
-dist/
-out/
-*.tmp
-.DS_Store
-`,
-  );
+  await writeFile(join(projectDir, ".gitignore"), "node_modules/\ndist/\nout/\n*.tmp\n.DS_Store\n");
 
-  console.log(`  Created ${parsed.name}/`);
-  console.log(`  ├── src/index.tsx`);
-  console.log(`  ├── public/`);
-  console.log(`  ├── package.json`);
-  console.log(`  ├── tsconfig.json`);
-  console.log(`  └── .gitignore`);
-
-  console.log(`
-Next steps:
-  cd ${parsed.name}
-  bun install
-  bun run dev        # preview in browser
-  bun run build      # render to video
-`);
+  const files = ["src/index.tsx", "package.json", "tsconfig.json", ".gitignore", "public/"];
+  return { project: name, template, files };
 }
