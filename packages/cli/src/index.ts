@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { renderCommand } from "./commands/render.js";
 import { previewCommand } from "./commands/preview.js";
 import { listCommand } from "./commands/list.js";
