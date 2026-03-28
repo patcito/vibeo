@@ -8,7 +8,7 @@ import { homedir } from "node:os";
 // Skill loader — resolves from the CLI package's own skills/ directory
 // ---------------------------------------------------------------------------
 
-const SKILL_NAMES = ["vibeo-core", "vibeo-audio", "vibeo-effects", "vibeo-extras", "vibeo-rendering"];
+const SKILL_NAMES = ["vibeo-core", "vibeo-audio", "vibeo-effects", "vibeo-extras", "vibeo-rendering", "vibeo-editor"];
 
 async function loadSkills(): Promise<Record<string, string>> {
   // Resolve from this file's location — skills/ is shipped alongside dist/ in the npm package

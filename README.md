@@ -12,7 +12,8 @@ A React-based programmatic video framework. Write video compositions as React co
 | `@vibeo/renderer` | Headless rendering via Playwright + FFmpeg stitching |
 | `@vibeo/effects` | Keyframes, transitions, spring physics, audio-reactive animations |
 | `@vibeo/extras` | Subtitles (SRT/VTT), audio visualization, scene graph, audio mixing |
-| `@vibeo/cli` | CLI: create, render, preview, list commands |
+| `@vibeo/editor` | Visual video editor with timeline, drag-and-drop, property editing |
+| `@vibeo/cli` | CLI: create, render, preview, editor, list commands |
 
 ## Quick Start
 
@@ -311,6 +312,79 @@ export function Root() {
 }
 ```
 
+## Visual Editor
+
+Vibeo includes a full visual video editor with a dark-themed UI, multi-track timeline, canvas preview, property editing, and drag-and-drop.
+
+```bash
+# Open the editor for any project
+bunx @vibeo/cli editor --entry src/index.tsx
+
+# Or use the npm script in a scaffolded project
+bun run editor
+```
+
+### Editor Features
+
+- **3-panel layout** — left sidebar (scenes & tracks), center (canvas + timeline), right sidebar (properties + export)
+- **Canvas preview** — live preview of the active composition with checkerboard transparency background
+- **Multi-track timeline** — color-coded clips (purple=scene, green=audio, yellow=subtitle), time ruler, zoom controls
+- **Playhead** — draggable cursor to scrub through the timeline
+- **Playback controls** — play/pause, step forward/back, playback rate (0.25x-4x), loop toggle, timecode display
+- **Property editor** — edit clip properties (position, duration, volume, text) with immediate preview updates
+- **Drag-and-drop** — move and resize clips in the timeline, drag edges to trim
+- **Add tracks** — add scenes, audio tracks, or subtitle tracks via the sidebar menu
+- **Audio waveform** — visual waveform bars inside audio clips
+- **Subtitle editing** — inline text editing by double-clicking subtitle cues
+- **Export** — codec selector (H.264/H.265/VP9/ProRes) and "Render video" button
+- **Keyboard shortcuts** — Space (play/pause), arrows (frame step), Cmd+Z (undo), Delete (remove clip)
+- **Undo/redo** — full history stack for all editing actions
+
+### Using the Editor Programmatically
+
+```tsx
+import { Editor } from "@vibeo/editor";
+
+const compositions = [
+  {
+    id: "MyComp",
+    name: "My Composition",
+    component: MyVideoComponent,
+    width: 1920,
+    height: 1080,
+    fps: 30,
+    durationInFrames: 300,
+  },
+];
+
+function App() {
+  return <Editor compositions={compositions} />;
+}
+```
+
+### Editor Layout
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Toolbar: [⟲ Undo] [⟳ Redo]     CompositionName       100% │
+├──────────┬─────────────────────────────────┬────────────────┤
+│ SCENES   │                                 │ PROPERTIES     │
+│ & TRACKS │      Canvas Preview             │ Canvas: 1920×1080 │
+│          │                                 │ Duration: 150  │
+│ 🎬 Scene1│   (live composition preview)    │ FPS: 30        │
+│ 🎵 Audio │                                 │                │
+│ 📝 Subs  │                                 │ EXPORT         │
+│          │                                 │ Codec: H.264   │
+│ [+Add]   ├──────── Playback Controls ──────│ [Render video] │
+├──────────┴─────────────────────────────────┴────────────────┤
+│ Timeline: [ruler with time markers]              [- zoom +] │
+│ Track 1: [████ Scene A ████][████ Scene B ████]             │
+│ Track 2:      [████████ Audio ████████]                     │
+│ Track 3: [Sub1]  [Sub2]     [Sub3]                          │
+│ ▲ playhead                                                  │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ## Core Concepts
 
 **Frame-based timeline** - Everything is keyed to frame numbers, not time. `useCurrentFrame()` returns the frame relative to the nearest `<Sequence>`.
@@ -337,6 +411,9 @@ const opacity = interpolate(frame, [0, 30], [0, 1], {
 # Create a new project
 bunx @vibeo/cli create <name> [--template basic|audio-reactive|transitions|subtitles]
 
+# Open the visual editor
+bunx @vibeo/cli editor --entry src/index.tsx [--port 3001]
+
 # Preview in browser with controls
 bunx @vibeo/cli preview --entry src/index.tsx [--port 3000]
 
@@ -345,6 +422,9 @@ bunx @vibeo/cli render --entry src/index.tsx --composition MyComp [--output out.
 
 # List registered compositions
 bunx @vibeo/cli list --entry src/index.tsx
+
+# Install LLM skills for all supported tools
+bunx @vibeo/cli install-skills
 ```
 
 ## LLM & Agent Integration
