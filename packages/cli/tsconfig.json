@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "paths": {
+      "@vibeo/core": ["../core/src/index.ts"],
+      "@vibeo/core/*": ["../core/src/*"],
+      "@vibeo/renderer": ["../renderer/src/index.ts"],
+      "@vibeo/renderer/*": ["../renderer/src/*"],
+      "@vibeo/cli": ["./src/index.ts"],
+      "@vibeo/cli/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}

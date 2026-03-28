@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "declaration": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["bun-types"],
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "paths": {
+      "@vibeo/core": ["./packages/core/src/index.ts"],
+      "@vibeo/core/*": ["./packages/core/src/*"],
+      "@vibeo/audio": ["./packages/audio/src/index.ts"],
+      "@vibeo/audio/*": ["./packages/audio/src/*"],
+      "@vibeo/player": ["./packages/player/src/index.ts"],
+      "@vibeo/player/*": ["./packages/player/src/*"],
+      "@vibeo/renderer": ["./packages/renderer/src/index.ts"],
+      "@vibeo/renderer/*": ["./packages/renderer/src/*"],
+      "@vibeo/effects": ["./packages/effects/src/index.ts"],
+      "@vibeo/effects/*": ["./packages/effects/src/*"],
+      "@vibeo/cli": ["./packages/cli/src/index.ts"],
+      "@vibeo/cli/*": ["./packages/cli/src/*"],
+      "@vibeo/extras": ["./packages/extras/src/index.ts"],
+      "@vibeo/extras/*": ["./packages/extras/src/*"]
+    }
+  },
+  "include": ["packages/*/src", "examples"]
+}

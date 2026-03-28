@@ -1,0 +1,36 @@
+{
+  "name": "@vibeo/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "vibeo": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@vibeo/core": "0.1.0",
+    "@vibeo/renderer": "0.1.0",
+    "@vibeo/player": "0.1.0",
+    "@vibeo/audio": "0.1.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patcito/vibeo.git",
+    "directory": "packages/cli"
+  },
+  "license": "MIT"
+}

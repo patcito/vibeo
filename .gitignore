@@ -1,0 +1,9 @@
+node_modules/
+dist/
+out/
+*.tmp
+.DS_Store
+smithers.db
+my-vide/
+.claude/
+workflows/

@@ -1,0 +1,27 @@
+{
+  "name": "vibeo",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "bun run build:core && bun run build:audio && bun run build:effects && bun run build:player && bun run build:extras && bun run build:renderer && bun run build:cli",
+    "build:core": "cd packages/core && bun run build",
+    "build:audio": "cd packages/audio && bun run build",
+    "build:effects": "cd packages/effects && bun run build",
+    "build:player": "cd packages/player && bun run build",
+    "build:extras": "cd packages/extras && bun run build",
+    "build:renderer": "cd packages/renderer && bun run build",
+    "build:cli": "cd packages/cli && bun run build",
+    "clean": "rm -rf packages/*/dist",
+    "typecheck": "bunx tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "bun-types": "^1.3.11",
+    "typescript": "^6.0.2"
+  }
+}

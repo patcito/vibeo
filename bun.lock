@@ -1,0 +1,133 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "dependencies": {
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+      },
+      "devDependencies": {
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "bun-types": "^1.3.11",
+        "typescript": "^6.0.2",
+      },
+    },
+    "packages/audio": {
+      "name": "@vibeo/audio",
+      "version": "0.1.0",
+      "dependencies": {
+        "@vibeo/core": "0.1.0",
+      },
+      "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0",
+      },
+    },
+    "packages/cli": {
+      "name": "@vibeo/cli",
+      "version": "0.1.0",
+      "bin": {
+        "vibeo": "./dist/index.js",
+      },
+      "dependencies": {
+        "@vibeo/audio": "0.1.0",
+        "@vibeo/core": "0.1.0",
+        "@vibeo/player": "0.1.0",
+        "@vibeo/renderer": "0.1.0",
+      },
+    },
+    "packages/core": {
+      "name": "@vibeo/core",
+      "version": "0.1.0",
+      "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0",
+      },
+    },
+    "packages/effects": {
+      "name": "@vibeo/effects",
+      "version": "0.1.0",
+      "dependencies": {
+        "@vibeo/audio": "0.1.0",
+        "@vibeo/core": "0.1.0",
+      },
+      "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0",
+      },
+    },
+    "packages/extras": {
+      "name": "@vibeo/extras",
+      "version": "0.1.0",
+      "dependencies": {
+        "@vibeo/audio": "0.1.0",
+        "@vibeo/core": "0.1.0",
+        "@vibeo/effects": "0.1.0",
+      },
+      "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0",
+      },
+    },
+    "packages/player": {
+      "name": "@vibeo/player",
+      "version": "0.1.0",
+      "dependencies": {
+        "@vibeo/audio": "0.1.0",
+        "@vibeo/core": "0.1.0",
+      },
+      "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0",
+      },
+    },
+    "packages/renderer": {
+      "name": "@vibeo/renderer",
+      "version": "0.1.0",
+      "dependencies": {
+        "@vibeo/audio": "0.1.0",
+        "@vibeo/core": "0.1.0",
+        "@vibeo/player": "0.1.0",
+        "playwright": "^1.52.0",
+      },
+    },
+  },
+  "packages": {
+    "@types/node": ["@types/node@25.5.0", "", { "dependencies": { "undici-types": "~7.18.0" } }, "sha512-jp2P3tQMSxWugkCUKLRPVUpGaL5MVFwF8RDuSRztfwgN1wmqJeMSbKlnEtQqU8UrhTmzEmZdu2I6v2dpp7XIxw=="],
+
+    "@types/react": ["@types/react@19.2.14", "", { "dependencies": { "csstype": "^3.2.2" } }, "sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w=="],
+
+    "@types/react-dom": ["@types/react-dom@19.2.3", "", { "peerDependencies": { "@types/react": "^19.2.0" } }, "sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ=="],
+
+    "@vibeo/audio": ["@vibeo/audio@workspace:packages/audio"],
+
+    "@vibeo/cli": ["@vibeo/cli@workspace:packages/cli"],
+
+    "@vibeo/core": ["@vibeo/core@workspace:packages/core"],
+
+    "@vibeo/effects": ["@vibeo/effects@workspace:packages/effects"],
+
+    "@vibeo/extras": ["@vibeo/extras@workspace:packages/extras"],
+
+    "@vibeo/player": ["@vibeo/player@workspace:packages/player"],
+
+    "@vibeo/renderer": ["@vibeo/renderer@workspace:packages/renderer"],
+
+    "bun-types": ["bun-types@1.3.11", "", { "dependencies": { "@types/node": "*" } }, "sha512-1KGPpoxQWl9f6wcZh57LvrPIInQMn2TQ7jsgxqpRzg+l0QPOFvJVH7HmvHo/AiPgwXy+/Thf6Ov3EdVn1vOabg=="],
+
+    "csstype": ["csstype@3.2.3", "", {}, "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ=="],
+
+    "fsevents": ["fsevents@2.3.2", "", { "os": "darwin" }, "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA=="],
+
+    "playwright": ["playwright@1.58.2", "", { "dependencies": { "playwright-core": "1.58.2" }, "optionalDependencies": { "fsevents": "2.3.2" }, "bin": { "playwright": "cli.js" } }, "sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A=="],
+
+    "playwright-core": ["playwright-core@1.58.2", "", { "bin": { "playwright-core": "cli.js" } }, "sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg=="],
+
+    "react": ["react@19.2.4", "", {}, "sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ=="],
+
+    "react-dom": ["react-dom@19.2.4", "", { "dependencies": { "scheduler": "^0.27.0" }, "peerDependencies": { "react": "^19.2.4" } }, "sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ=="],
+
+    "scheduler": ["scheduler@0.27.0", "", {}, "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q=="],
+
+    "typescript": ["typescript@6.0.2", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ=="],
+
+    "undici-types": ["undici-types@7.18.2", "", {}, "sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w=="],
+  }
+}

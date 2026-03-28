@@ -1,0 +1,33 @@
+{
+  "name": "@vibeo/renderer",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@vibeo/core": "0.1.0",
+    "@vibeo/player": "0.1.0",
+    "@vibeo/audio": "0.1.0",
+    "playwright": "^1.52.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patcito/vibeo.git",
+    "directory": "packages/renderer"
+  },
+  "license": "MIT"
+}
