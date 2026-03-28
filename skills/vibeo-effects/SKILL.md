@@ -362,3 +362,71 @@ function ReactiveBackground({ children }: { children: React.ReactNode }) {
 5. **`useKeyframes` requires you to pass `frame` explicitly** — it doesn't call `useCurrentFrame()` internally. This gives you flexibility to use any frame value.
 
 6. **`springDuration()` is useful for sizing `<Sequence>` wrappers** to match how long a spring animation takes to settle.
+
+
+---
+
+## LLM & Agent Integration
+
+Vibeo's CLI is built with [incur](https://github.com/wevm/incur), making it natively discoverable by AI agents and LLMs.
+
+### Discovering the API
+
+```bash
+# Get a compact summary of all CLI commands (ideal for LLM system prompts)
+bunx @vibeo/cli --llms
+
+# Get the full manifest with schemas, examples, and argument details
+bunx @vibeo/cli --llms-full
+
+# Get JSON Schema for a specific command (useful for structured tool calls)
+bunx @vibeo/cli render --schema
+bunx @vibeo/cli create --schema
+```
+
+### Using as an MCP Server
+
+```bash
+# Start Vibeo as an MCP (Model Context Protocol) server
+bunx @vibeo/cli --mcp
+
+# Register as a persistent MCP server for your agent
+bunx @vibeo/cli mcp add
+```
+
+This lets LLMs call `create`, `render`, `preview`, and `list` as structured tool calls through the MCP protocol.
+
+### Generating Skill Files
+
+```bash
+# Sync skill files to your agent's skill directory
+bunx @vibeo/cli skills add
+```
+
+This generates markdown skill files that agents like Claude Code can discover and use to write Vibeo code without reading source.
+
+### Agent-Friendly Output
+
+```bash
+# Output as JSON for programmatic consumption
+bunx @vibeo/cli list --entry src/index.tsx --format json
+
+# Output as YAML
+bunx @vibeo/cli list --entry src/index.tsx --format yaml
+
+# Filter output to specific keys
+bunx @vibeo/cli list --entry src/index.tsx --filter-output compositions[0].id
+
+# Count tokens in output (useful for context window planning)
+bunx @vibeo/cli render --schema --token-count
+```
+
+### How LLMs Should Use Vibeo
+
+1. **Discover commands**: Run `bunx @vibeo/cli --llms` to get the command manifest
+2. **Create a project**: `bunx @vibeo/cli create my-video --template basic`
+3. **Edit `src/index.tsx`**: Write React components using `@vibeo/core` hooks and components
+4. **Preview**: `bunx @vibeo/cli preview --entry src/index.tsx`
+5. **Render**: `bunx @vibeo/cli render --entry src/index.tsx --composition MyComp`
+
+All commands accept `--format json` for structured output that LLMs can parse reliably.
