@@ -243,9 +243,9 @@ export async function createProject(
     private: true,
     type: "module",
     scripts: {
-      dev: "bunx @vibeo/cli preview --entry src/index.tsx",
-      build: "bunx @vibeo/cli render --entry src/index.tsx",
-      list: "bunx @vibeo/cli list --entry src/index.tsx",
+      dev: "bun vibeo preview --entry src/index.tsx",
+      build: "bun vibeo render --entry src/index.tsx",
+      list: "bun vibeo list --entry src/index.tsx",
       typecheck: "bunx tsc --noEmit",
     },
     dependencies: {
@@ -255,7 +255,7 @@ export async function createProject(
       "@vibeo/extras": "^0.1.0",
       "@vibeo/player": "^0.1.0",
       "@vibeo/renderer": "^0.1.0",
-      "@vibeo/cli": "^0.1.0",
+      "@vibeo/cli": "^0.3.0",
       react: "^19.0.0",
       "react-dom": "^19.0.0",
     },
