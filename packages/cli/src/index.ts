@@ -5,6 +5,7 @@ import { createProject } from "./commands/create.js";
 import { startPreview } from "./commands/preview.js";
 import { listCompositions } from "./commands/list.js";
 import { renderVideo } from "./commands/render.js";
+import { installSkills } from "./commands/install-skills.js";
 
 const cli = Cli.create("vibeo", {
   description: "React-based programmatic video framework CLI",
@@ -104,6 +105,29 @@ cli.command("list", {
   async run(c) {
     const compositions = await listCompositions(resolve(c.options.entry));
     return { compositions };
+  },
+});
+
+cli.command("install-skills", {
+  description:
+    "Install Vibeo skill/rule files for all supported LLM coding tools (Claude, Codex, Cursor, Gemini, OpenCode, Aider)",
+  options: z.object({
+    targets: z
+      .string()
+      .optional()
+      .describe(
+        'Comma-separated list of targets (default: all). Options: claude, codex, cursor, gemini, opencode, aider',
+      ),
+  }),
+  examples: [
+    { description: "Install for all supported tools" },
+    { options: { targets: "claude,cursor" }, description: "Install for Claude and Cursor only" },
+  ],
+  async run(c) {
+    const targets = c.options.targets
+      ? c.options.targets.split(",").map((t: string) => t.trim())
+      : [];
+    return await installSkills(targets, process.cwd());
   },
 });
 
