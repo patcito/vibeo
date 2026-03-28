@@ -1,25 +1,33 @@
 import { resolve, join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 
 // ---------------------------------------------------------------------------
-// Embedded skill content (so it works from npm without the skills/ dir)
+// Skill loader — resolves from the CLI package's own skills/ directory
 // ---------------------------------------------------------------------------
 
+const SKILL_NAMES = ["vibeo-core", "vibeo-audio", "vibeo-effects", "vibeo-extras", "vibeo-rendering"];
+
 async function loadSkills(): Promise<Record<string, string>> {
-  // Try to load from the repo's skills/ directory first
+  // Resolve from this file's location — skills/ is shipped alongside dist/ in the npm package
+  const thisFile = fileURLToPath(import.meta.url);
+  const thisDir = dirname(thisFile);
+
+  // From dist/commands/install-skills.js → ../../skills
+  // From src/commands/install-skills.ts → ../../skills
   const candidates = [
-    join(dirname(import.meta.url.replace("file://", "")), "../../../../skills"),
-    join(process.cwd(), "skills"),
+    join(thisDir, "..", "..", "skills"),       // from dist/commands/ or src/commands/
+    join(thisDir, "..", "..", "..", "skills"),  // from deeper nesting
+    join(process.cwd(), "skills"),             // from project root
   ];
 
   for (const dir of candidates) {
-    const names = ["vibeo-core", "vibeo-audio", "vibeo-effects", "vibeo-extras", "vibeo-rendering"];
     const skills: Record<string, string> = {};
     let found = true;
 
-    for (const name of names) {
+    for (const name of SKILL_NAMES) {
       const path = join(dir, name, "SKILL.md");
       if (existsSync(path)) {
         skills[name] = await readFile(path, "utf-8");
@@ -32,78 +40,11 @@ async function loadSkills(): Promise<Record<string, string>> {
     if (found) return skills;
   }
 
-  // Fallback: generate a minimal combined skill from --llms-full output
-  return {
-    vibeo: getEmbeddedSkill(),
-  };
-}
-
-function getEmbeddedSkill(): string {
-  return `# Vibeo — React Video Framework
-
-Vibeo is a React-based programmatic video framework. Write video compositions as React components, preview in the browser, and render to video with FFmpeg.
-
-## Quick Reference
-
-\`\`\`bash
-# Get full CLI docs
-bunx @vibeo/cli --llms-full
-
-# Create a project
-bunx @vibeo/cli create my-video --template basic
-
-# Preview
-bunx @vibeo/cli preview --entry src/index.tsx
-
-# Render
-bunx @vibeo/cli render --entry src/index.tsx --composition MyComp
-
-# List compositions
-bunx @vibeo/cli list --entry src/index.tsx
-\`\`\`
-
-## Packages
-
-- \`@vibeo/core\` — Composition, Sequence, Loop, useCurrentFrame, useVideoConfig, interpolate, easing
-- \`@vibeo/audio\` — Audio/Video components, 48kHz sync, volume curves, audio mixing
-- \`@vibeo/effects\` — useKeyframes, useSpring, Transition (fade/wipe/slide/dissolve), useAudioData
-- \`@vibeo/extras\` — Subtitle (SRT/VTT), AudioWaveform, AudioSpectrogram, SceneGraph, AudioMix
-- \`@vibeo/player\` — Interactive Player component with controls
-- \`@vibeo/renderer\` — Headless rendering via Playwright + FFmpeg
-- \`@vibeo/cli\` — CLI with incur (supports --llms, --mcp, --schema)
-
-## Core Pattern
-
-\`\`\`tsx
-import { Composition, Sequence, VibeoRoot, useCurrentFrame, useVideoConfig, interpolate } from "@vibeo/core";
-
-function MyScene() {
-  const frame = useCurrentFrame();
-  const { width, height, fps } = useVideoConfig();
-  const opacity = interpolate(frame, [0, 30], [0, 1], { extrapolateRight: "clamp" });
-  return <div style={{ width, height, opacity }}>Hello</div>;
-}
-
-export function Root() {
-  return (
-    <VibeoRoot>
-      <Composition id="MyComp" component={MyScene} width={1920} height={1080} fps={30} durationInFrames={150} />
-    </VibeoRoot>
+  throw new Error(
+    "Could not find skill files. Make sure the @vibeo/cli package is installed correctly.",
   );
 }
-\`\`\`
 
-## Key Math
-
-- Frame to time: \`time = frame / fps\`
-- Samples per frame (audio): \`(48000 * 2) / fps\`
-- Media time with playback rate: uses interpolation with rate scaling
-- Sequence relative frame: \`absoluteFrame - (cumulatedFrom + relativeFrom)\`
-- Loop iteration: \`floor(currentFrame / durationInFrames)\`
-
-For full API details, run \`bunx @vibeo/cli --llms-full\` or \`bunx @vibeo/cli <command> --schema\`.
-`;
-}
 
 // ---------------------------------------------------------------------------
 // LLM tool targets

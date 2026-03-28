@@ -1,6 +1,6 @@
 {
   "name": "@vibeo/cli",
-  "version": "0.3.3",
+  "version": "0.3.5",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -23,6 +23,7 @@
   "files": [
     "bin",
     "dist",
+    "skills",
     "src"
   ],
   "scripts": {
