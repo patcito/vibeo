@@ -120,24 +120,26 @@ const home = homedir();
 const TARGETS: Target[] = [
   {
     name: "claude",
-    description: "Claude Code (~/.claude/skills/ + project CLAUDE.md)",
+    description: "Claude Code (~/.claude/skills/<name>/SKILL.md + project .claude/skills/<name>/SKILL.md)",
     async install(skills, cwd) {
       const files: string[] = [];
 
-      // Global skills directory
+      // Global skills directory — each skill in its own dir with SKILL.md
       const globalDir = join(home, ".claude", "skills");
-      await mkdir(globalDir, { recursive: true });
       for (const [name, content] of Object.entries(skills)) {
-        const path = join(globalDir, `${name}.md`);
+        const skillDir = join(globalDir, name);
+        await mkdir(skillDir, { recursive: true });
+        const path = join(skillDir, "SKILL.md");
         await writeFile(path, content);
         files.push(path);
       }
 
-      // Project-level .claude/skills/
+      // Project-level .claude/skills/<name>/SKILL.md
       const projectDir = join(cwd, ".claude", "skills");
-      await mkdir(projectDir, { recursive: true });
       for (const [name, content] of Object.entries(skills)) {
-        const path = join(projectDir, `${name}.md`);
+        const skillDir = join(projectDir, name);
+        await mkdir(skillDir, { recursive: true });
+        const path = join(skillDir, "SKILL.md");
         await writeFile(path, content);
         files.push(path);
       }
