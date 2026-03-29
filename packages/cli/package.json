@@ -1,6 +1,6 @@
 {
   "name": "@vibeo/cli",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -17,7 +17,7 @@
     "@vibeo/audio": "0.1.0",
     "@vibeo/core": "0.1.0",
     "@vibeo/player": "0.1.0",
-    "@vibeo/renderer": "0.1.0",
+    "@vibeo/renderer": "^0.2.0",
     "incur": "^0.3.13"
   },
   "files": [
