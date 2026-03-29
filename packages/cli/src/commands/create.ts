@@ -213,8 +213,93 @@ export function Root() {
 
 // ---------------------------------------------------------------------------
 
+const TEMPLATE_TIKTOK = `import React from "react";
+import {
+  Composition, Sequence, VibeoRoot,
+  useCurrentFrame, useVideoConfig, interpolate, easeOut, easeInOut,
+} from "@vibeo/core";
+
+const SCENES = {
+  hook:    { from: 0,    duration: 90  },
+  content: { from: 90,   duration: 270 },
+  cta:     { from: 360,  duration: 90  },
+} as const;
+const TOTAL = 450;
+
+function HookScene() {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+  const scale = interpolate(frame, [0, 15], [0.5, 1], { easing: easeOut, extrapolateRight: "clamp" });
+  const opacity = interpolate(frame, [0, 10], [0, 1], { extrapolateRight: "clamp" });
+  const glow = interpolate(frame % 30, [0, 15, 30], [0, 15, 0]);
+
+  return (
+    <div style={{ width, height, display: "flex", justifyContent: "center", alignItems: "center", background: "linear-gradient(180deg, #0a0a0a, #1a0a2e)", padding: "100px 60px 150px" }}>
+      <h1 style={{ fontSize: 80, fontWeight: 900, color: "white", textAlign: "center", lineHeight: 1.2, opacity, transform: \`scale(\${scale})\`, textShadow: \`0 0 \${glow}px rgba(138, 92, 246, 0.8)\` }}>
+        Your Hook Text Here
+      </h1>
+    </div>
+  );
+}
+
+function ContentScene() {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+  const points = ["Point one goes here", "Point two goes here", "Point three goes here"];
+
+  return (
+    <div style={{ width, height, display: "flex", flexDirection: "column", justifyContent: "center", padding: "100px 60px 150px", background: "#0a0a0a", gap: 24 }}>
+      {points.map((point, i) => {
+        const delay = 15 + i * 20;
+        const opacity = interpolate(frame, [delay, delay + 15], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+        const x = interpolate(frame, [delay, delay + 15], [-40, 0], { easing: easeOut, extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+        return (
+          <div key={i} style={{ opacity, transform: \`translateX(\${x}px)\`, display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ width: 48, height: 48, borderRadius: 12, background: "linear-gradient(135deg, #8b5cf6, #06b6d4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, color: "white" }}>{i + 1}</div>
+            <span style={{ fontSize: 40, color: "white", fontWeight: 600 }}>{point}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function CTAScene() {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+  const scale = interpolate(frame, [0, 20], [0.8, 1], { easing: easeOut, extrapolateRight: "clamp" });
+  const btnScale = interpolate(frame % 30, [0, 15, 30], [1, 1.05, 1]);
+
+  return (
+    <div style={{ width, height, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", background: "linear-gradient(180deg, #0a0a0a, #1a0a2e)", padding: "100px 60px 150px", transform: \`scale(\${scale})\` }}>
+      <h1 style={{ fontSize: 72, fontWeight: 900, color: "white", textAlign: "center" }}>Follow for more</h1>
+      <div style={{ marginTop: 40, padding: "20px 60px", borderRadius: 50, background: "linear-gradient(135deg, #8b5cf6, #06b6d4)", fontSize: 36, fontWeight: 700, color: "white", transform: \`scale(\${btnScale})\` }}>Like & Share</div>
+    </div>
+  );
+}
+
+function TikTokVideo() {
+  return (
+    <>
+      <Sequence from={SCENES.hook.from} durationInFrames={SCENES.hook.duration}><HookScene /></Sequence>
+      <Sequence from={SCENES.content.from} durationInFrames={SCENES.content.duration}><ContentScene /></Sequence>
+      <Sequence from={SCENES.cta.from} durationInFrames={SCENES.cta.duration}><CTAScene /></Sequence>
+    </>
+  );
+}
+
+export function Root() {
+  return (
+    <VibeoRoot>
+      <Composition id="TikTokVideo" component={TikTokVideo} width={1080} height={1920} fps={30} durationInFrames={TOTAL} />
+    </VibeoRoot>
+  );
+}
+`;
+
 const TEMPLATES: Record<string, { description: string; source: string }> = {
   basic: { description: "Minimal composition with text animation and two scenes", source: TEMPLATE_BASIC },
+  tiktok: { description: "Vertical 1080x1920 short-form video (TikTok/Shorts/Reels)", source: TEMPLATE_TIKTOK },
   "audio-reactive": { description: "Audio visualization with frequency bars", source: TEMPLATE_AUDIO_REACTIVE },
   transitions: { description: "Scene transitions (fade, slide)", source: TEMPLATE_TRANSITIONS },
   subtitles: { description: "Video with SRT subtitle overlay", source: TEMPLATE_SUBTITLES },

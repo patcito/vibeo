@@ -27,7 +27,7 @@ cli.command("create", {
   }),
   options: z.object({
     template: z
-      .enum(["basic", "audio-reactive", "transitions", "subtitles"])
+      .enum(["basic", "tiktok", "audio-reactive", "transitions", "subtitles"])
       .default("basic")
       .describe("Template to scaffold from"),
   }),
