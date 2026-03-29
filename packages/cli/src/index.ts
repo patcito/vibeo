@@ -6,7 +6,7 @@ import { startPreview } from "./commands/preview.js";
 import { listCompositions } from "./commands/list.js";
 import { renderVideo } from "./commands/render.js";
 import { installSkills } from "./commands/install-skills.js";
-// editor imported lazily to avoid crashing when @vibeo/renderer doesn't have bundleForEditor
+import { startEditor } from "./commands/editor.js";
 
 const cli = Cli.create("vibeo", {
   description: "React-based programmatic video framework CLI",
@@ -119,7 +119,6 @@ cli.command("editor", {
     { options: { entry: "src/index.tsx" }, description: "Open editor on default port" },
   ],
   async run(c) {
-    const { startEditor } = await import("./commands/editor.js");
     await startEditor(resolve(c.options.entry), c.options.port);
   },
 });
