@@ -255,6 +255,7 @@ export async function createProject(
       "@vibeo/effects": "^0.1.0",
       "@vibeo/extras": "^0.1.0",
       "@vibeo/player": "^0.1.0",
+      "@vibeo/editor": "^0.1.0",
       "@vibeo/renderer": "^0.2.0",
       "@vibeo/cli": "^0.4.0",
       react: "^19.0.0",
