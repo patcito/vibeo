@@ -218,24 +218,27 @@ const scale = useKeyframes(frame, { 0: 1, 15: 1.2, 30: 1 }, { easing: easeInOut 
 
 ## Spring Animation Guide
 
-### Snappy UI motion
-```ts
-useSpring({ from: 0, to: 1, config: { stiffness: 300, damping: 30 } })
-```
+### Named Spring Presets
 
-### Bouncy entrance
+| Name | stiffness | damping | mass | Use case |
+|------|-----------|---------|------|----------|
+| **snappy** | 300 | 30 | 1 | UI elements, quick responses |
+| **bouncy** | 400 | 10 | 1 | Playful entrances, logos |
+| **gentle** | 100 | 26 | 1 | Subtle movements, text |
+| **heavy** | 50 | 20 | 3 | Large elements, dramatic reveals |
+| **elastic** | 200 | 8 | 1 | Overshoot effects, attention grabbers |
+
 ```ts
+// Snappy
+useSpring({ from: 0, to: 1, config: { stiffness: 300, damping: 30, mass: 1 } })
+// Bouncy
 useSpring({ from: 0, to: 1, config: { stiffness: 400, damping: 10, mass: 1 } })
-```
-
-### Slow, heavy drag
-```ts
+// Gentle
+useSpring({ from: 0, to: 1, config: { stiffness: 100, damping: 26, mass: 1 } })
+// Heavy
 useSpring({ from: 0, to: 1, config: { stiffness: 50, damping: 20, mass: 3 } })
-```
-
-### Gentle ease
-```ts
-useSpring({ from: 0, to: 1, config: { stiffness: 100, damping: 26 } })
+// Elastic
+useSpring({ from: 0, to: 1, config: { stiffness: 200, damping: 8, mass: 1 } })
 ```
 
 **Tuning guide**:
@@ -345,6 +348,151 @@ function ReactiveBackground({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+```
+
+---
+
+## CodeBlock Recipe (for developer/tutorial content)
+
+The most common component in programming videos. Takes a plain string + optional highlight words:
+
+```tsx
+function CodeBlock({
+  code,
+  highlights = [],
+  fontSize = 24,
+  startFrame = 0,
+  lineDelay = 3,
+}: {
+  code: string;
+  highlights?: { word: string; color: string }[];
+  fontSize?: number;
+  startFrame?: number;
+  lineDelay?: number;
+}) {
+  const frame = useCurrentFrame();
+  const lines = code.split("\n");
+
+  return (
+    <div style={{
+      background: "#1e1e2e",
+      borderRadius: 12,
+      padding: "24px 32px",
+      fontFamily: "'SF Mono', 'Cascadia Code', monospace",
+      fontSize,
+      lineHeight: 1.6,
+      overflow: "hidden",
+    }}>
+      {lines.map((line, i) => {
+        const lineFrame = startFrame + i * lineDelay;
+        const opacity = interpolate(frame, [lineFrame, lineFrame + 10], [0, 1], {
+          extrapolateLeft: "clamp", extrapolateRight: "clamp",
+        });
+
+        let html = line.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+        for (const h of highlights) {
+          html = html.replaceAll(h.word, `<span style="color:${h.color}">${h.word}</span>`);
+        }
+
+        return (
+          <div key={i} style={{ opacity, whiteSpace: "pre" }} dangerouslySetInnerHTML={{ __html: html || "&nbsp;" }} />
+        );
+      })}
+    </div>
+  );
+}
+
+// Usage:
+<CodeBlock
+  code={`function Foo() {\n  return <div>hello</div>;\n}`}
+  highlights={[{ word: "function", color: "#c678dd" }, { word: "return", color: "#c678dd" }]}
+  startFrame={10}
+/>
+```
+
+---
+
+## SVG Animation Recipes
+
+### Spring-scale an SVG (logo entrance)
+
+```tsx
+function AnimatedLogo() {
+  const frame = useCurrentFrame();
+  const scale = useSpring({ from: 0, to: 1, frame, fps: 30, config: { stiffness: 400, damping: 10 } });
+  const rotation = interpolate(frame, [0, 30], [180, 0], { extrapolateRight: "clamp" });
+
+  return (
+    <svg width={200} height={200} style={{
+      transform: `scale(${scale}) rotate(${rotation}deg)`,
+      filter: `drop-shadow(0 0 ${20 * scale}px rgba(97, 218, 251, 0.6))`,
+    }}>
+      {/* SVG content */}
+    </svg>
+  );
+}
+```
+
+### Rotating SVG with glow
+
+```tsx
+const frame = useCurrentFrame();
+const rotation = (frame % 90) * 4; // full rotation every 3s at 30fps
+const glowIntensity = interpolate(frame % 60, [0, 30, 60], [10, 25, 10]);
+
+<svg style={{
+  transform: `rotate(${rotation}deg)`,
+  filter: `drop-shadow(0 0 ${glowIntensity}px cyan)`,
+}} />
+```
+
+---
+
+## Split-Screen / Comparison Layout
+
+Before/after code comparison — common in tutorial content:
+
+```tsx
+function SplitScreen({
+  left,
+  right,
+  dividerLabel = "VS",
+}: {
+  left: React.ReactNode;
+  right: React.ReactNode;
+  dividerLabel?: string;
+}) {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+
+  // Stagger: left appears first, divider, then right
+  const leftOpacity = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: "clamp" });
+  const rightOpacity = interpolate(frame, [20, 35], [0, 1], { extrapolateRight: "clamp" });
+  const dividerOpacity = interpolate(frame, [10, 20], [0, 1], { extrapolateRight: "clamp" });
+
+  return (
+    <div style={{ display: "flex", width, height }}>
+      <div style={{ flex: 1, opacity: leftOpacity, padding: 40 }}>{left}</div>
+      <div style={{
+        width: 60, display: "flex", alignItems: "center", justifyContent: "center",
+        opacity: dividerOpacity, color: "#888", fontSize: 20, fontWeight: 700,
+      }}>
+        {dividerLabel}
+      </div>
+      <div style={{ flex: 1, opacity: rightOpacity, padding: 40 }}>{right}</div>
+    </div>
+  );
+}
+```
+
+For vertical video (9:16), stack top/bottom instead of left/right:
+
+```tsx
+<div style={{ display: "flex", flexDirection: "column", width, height }}>
+  <div style={{ flex: 1 }}>{before}</div>
+  <div style={{ height: 4, background: "#333" }} />
+  <div style={{ flex: 1 }}>{after}</div>
+</div>
 ```
 
 ---

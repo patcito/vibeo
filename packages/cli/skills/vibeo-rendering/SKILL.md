@@ -355,10 +355,13 @@ bunx @vibeo/cli render --schema --token-count
 
 ### How LLMs Should Use Vibeo
 
-1. **Discover commands**: Run `bunx @vibeo/cli --llms` to get the command manifest
-2. **Create a project**: `bunx @vibeo/cli create my-video --template basic`
-3. **Edit `src/index.tsx`**: Write React components using `@vibeo/core` hooks and components
-4. **Preview**: `bunx @vibeo/cli preview --entry src/index.tsx`
-5. **Render**: `bunx @vibeo/cli render --entry src/index.tsx --composition MyComp`
+1. **Create a project**: `bunx @vibeo/cli create my-video --template basic`
+2. **Install deps**: `cd my-video && bun install`
+3. **Install Playwright** (REQUIRED for render/list): `bunx playwright install chromium`
+4. **Edit `src/index.tsx`**: Write React components using `@vibeo/core` hooks and components
+5. **Preview**: `bunx @vibeo/cli preview --entry src/index.tsx`
+6. **Render**: `bunx @vibeo/cli render --entry src/index.tsx --composition MyComp`
+
+**Step 3 is mandatory** — `vibeo render` and `vibeo list` will fail with a cryptic Playwright error without it. `vibeo preview` works without it (uses Bun.serve, not Playwright).
 
 All commands accept `--format json` for structured output that LLMs can parse reliably.

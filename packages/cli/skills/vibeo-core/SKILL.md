@@ -230,65 +230,124 @@ actualDuration = floor(duration / playbackRate)
 
 ---
 
+## Platform Format Presets
+
+Use these when the user mentions a platform. **Any time the user says "Short", "Reel", "TikTok", or "vertical" — use 1080x1920 (9:16), not landscape.**
+
+| Format | Width | Height | FPS | Max Duration | Aliases |
+|--------|-------|--------|-----|-------------|---------|
+| **YouTube** | 1920 | 1080 | 30 | — | landscape, standard |
+| **YouTube 4K** | 3840 | 2160 | 30-60 | — | 4K |
+| **YouTube Short** | 1080 | 1920 | 30-60 | 3 min | vertical |
+| **TikTok** | 1080 | 1920 | 30 | 10 min | |
+| **Instagram Reel** | 1080 | 1920 | 30 | 20 min | |
+| **Instagram Post** | 1080 | 1080 | 30 | 60s | square |
+| **Twitter/X** | 1920 | 1080 | 30 | 2m 20s | 512MB max |
+| **Twitter/X Short** | 1080 | 1920 | 30 | 2m 20s | vertical tweet |
+
+### Vertical video (9:16) layout tips
+
+- **Code blocks**: max ~900px wide, font size 24-28 (larger than landscape)
+- **No side-by-side**: use top/bottom stacks, not left/right splits
+- **Text**: minimum 36px body, 64px+ titles
+- **Safe zones**: avoid top 100px (status bar) and bottom 150px (nav gestures)
+- **Single focus**: one idea per screen, no multi-column layouts
+
+---
+
 ## Common Patterns
 
-### Creating a basic composition
+### Multi-file project structure (use for 3+ scenes)
 
-```tsx
-import { Composition, Sequence, useCurrentFrame, interpolate, easeInOut } from "@vibeo/core";
-
-function MyScene() {
-  const frame = useCurrentFrame();
-  const opacity = interpolate(frame, [0, 30], [0, 1], { easing: easeInOut });
-  return <div style={{ opacity }}>Hello Vibeo</div>;
-}
-
-// Register in a VibeoRoot
-<Composition
-  id="MyScene"
-  component={MyScene}
-  width={1920}
-  height={1080}
-  fps={30}
-  durationInFrames={150}
-/>
+```
+src/
+├── index.tsx              # Root + Composition registration
+├── Video.tsx              # Scene orchestrator (Sequences)
+├── scenes/
+│   ├── Intro.tsx
+│   ├── Problem.tsx
+│   ├── Solution.tsx
+│   └── Outro.tsx
+└── components/
+    ├── CodeBlock.tsx
+    └── AnimatedCard.tsx
 ```
 
-### Using Sequence for scene structure
+### Centralized scene timing (best practice)
+
+Define all timing in one place — never hardcode frame numbers in `<Sequence>`:
 
 ```tsx
+const SCENES = {
+  intro:    { from: 0,    duration: 120  },
+  problem:  { from: 120,  duration: 300  },
+  solution: { from: 420,  duration: 450  },
+  outro:    { from: 870,  duration: 90   },
+} as const;
+
+const TOTAL = SCENES.outro.from + SCENES.outro.duration;
+
 function MyVideo() {
   return (
     <>
-      <Sequence from={0} durationInFrames={60}>
+      <Sequence from={SCENES.intro.from} durationInFrames={SCENES.intro.duration}>
         <IntroScene />
       </Sequence>
-      <Sequence from={60} durationInFrames={90}>
-        <MainScene />
+      <Sequence from={SCENES.problem.from} durationInFrames={SCENES.problem.duration}>
+        <ProblemScene />
       </Sequence>
-      <Sequence from={150} durationInFrames={60}>
-        <OutroScene />
-      </Sequence>
+      {/* ... */}
     </>
   );
 }
 ```
 
-### Nesting Loops inside Sequences
+### Looping/pulsing animation
+
+Use `frame % N` for repeating effects (pulse, glow, rotate):
 
 ```tsx
-<Sequence from={0} durationInFrames={120}>
-  <Loop durationInFrames={30} times={4}>
-    <BouncingBall />
-  </Loop>
+const frame = useCurrentFrame();
+const pulse = interpolate(frame % 60, [0, 30, 60], [0.3, 0.6, 0.3]);
+const rotation = (frame % 90) * 4; // 360° every 3 seconds
+```
+
+### Staggered list/card animation
+
+Animate N items with increasing delay:
+
+```tsx
+const frame = useCurrentFrame();
+const items = ["Feature 1", "Feature 2", "Feature 3"];
+
+{items.map((item, i) => {
+  const delay = 10 + i * 8;
+  const opacity = interpolate(frame, [delay, delay + 20], [0, 1], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+  });
+  const y = interpolate(frame, [delay, delay + 20], [30, 0], {
+    easing: easeOut, extrapolateLeft: "clamp", extrapolateRight: "clamp",
+  });
+  return <div key={i} style={{ opacity, transform: `translateY(${y}px)` }}>{item}</div>;
+})}
+```
+
+### Overlapping Sequences for manual transitions
+
+Alternative to `<Transition>` when you need custom per-scene blend control:
+
+```tsx
+<Sequence from={0} durationInFrames={90}>
+  <SceneA />  {/* fade out in last 15 frames */}
+</Sequence>
+<Sequence from={75} durationInFrames={90}>
+  <SceneB />  {/* fade in during first 15 frames */}
 </Sequence>
 ```
 
 ### Multi-segment interpolation
 
 ```tsx
-const frame = useCurrentFrame();
-// Move right, then back, then down
 const x = interpolate(frame, [0, 30, 60, 90], [0, 200, 0, 0]);
 const y = interpolate(frame, [0, 30, 60, 90], [0, 0, 0, 200]);
 ```
@@ -371,10 +430,13 @@ bunx @vibeo/cli render --schema --token-count
 
 ### How LLMs Should Use Vibeo
 
-1. **Discover commands**: Run `bunx @vibeo/cli --llms` to get the command manifest
-2. **Create a project**: `bunx @vibeo/cli create my-video --template basic`
-3. **Edit `src/index.tsx`**: Write React components using `@vibeo/core` hooks and components
-4. **Preview**: `bunx @vibeo/cli preview --entry src/index.tsx`
-5. **Render**: `bunx @vibeo/cli render --entry src/index.tsx --composition MyComp`
+1. **Create a project**: `bunx @vibeo/cli create my-video --template basic`
+2. **Install deps**: `cd my-video && bun install`
+3. **Install Playwright** (required for render/list): `bunx playwright install chromium`
+4. **Edit `src/index.tsx`**: Write React components using `@vibeo/core` hooks and components
+5. **Preview**: `bunx @vibeo/cli preview --entry src/index.tsx`
+6. **Render**: `bunx @vibeo/cli render --entry src/index.tsx --composition MyComp`
+
+Step 3 is mandatory — `vibeo render` and `vibeo list` will fail without Playwright browsers installed.
 
 All commands accept `--format json` for structured output that LLMs can parse reliably.
