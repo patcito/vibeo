@@ -1,9 +1,8 @@
-import { bundleForEditor } from "@vibeo/renderer";
-
 export async function startEditor(entry: string, port: number): Promise<void> {
   console.log(`Starting editor server...`);
   console.log(`  Entry: ${entry}`);
 
+  const { bundleForEditor } = await import("@vibeo/renderer");
   const bundleResult = await bundleForEditor(entry, port);
 
   console.log(`\n  Editor running at ${bundleResult.url}`);
