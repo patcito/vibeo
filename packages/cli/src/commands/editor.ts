@@ -4,7 +4,7 @@ export async function startEditor(entry: string, port: number): Promise<void> {
 
   // Import renderer and get bundleForEditor
   const renderer = await import("@vibeo/renderer");
-  const bundleForEditor = renderer.bundleForEditor ?? renderer.default?.bundleForEditor;
+  const bundleForEditor = renderer.bundleForEditor ?? (renderer as any).default?.bundleForEditor;
 
   if (typeof bundleForEditor !== "function") {
     console.error("Error: @vibeo/renderer does not export bundleForEditor.");

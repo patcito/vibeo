@@ -125,15 +125,19 @@ export function editorReducer(
       return { ...state, selectedTrackId: action.trackId };
 
     case "SET_FRAME":
+      if (state.frame === action.frame) return state;
       return { ...state, frame: action.frame };
 
     case "SET_PLAYING":
+      if (state.playing === action.playing) return state;
       return { ...state, playing: action.playing };
 
     case "SET_ZOOM":
+      if (state.zoom === action.zoom) return state;
       return { ...state, zoom: action.zoom };
 
     case "SET_SCROLL_X":
+      if (state.scrollX === action.scrollX) return state;
       return { ...state, scrollX: action.scrollX };
 
     case "SET_PLAYBACK_RATE":

@@ -48,13 +48,17 @@ export const Canvas: React.FC = () => {
     if (state.playing) {
       ref.play();
       let rafId: number;
+      let lastSyncedFrame = -1;
       const sync = () => {
         if (!ref.isPlaying()) {
           dispatch({ type: "SET_PLAYING", playing: false });
           return;
         }
         const f = ref.getCurrentFrame();
-        dispatch({ type: "SET_FRAME", frame: f });
+        if (f !== lastSyncedFrame) {
+          lastSyncedFrame = f;
+          dispatch({ type: "SET_FRAME", frame: f });
+        }
         rafId = requestAnimationFrame(sync);
       };
       rafId = requestAnimationFrame(sync);

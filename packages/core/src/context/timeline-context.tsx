@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
 
 interface TimelineState {
   /** Map of compositionId → current frame */
@@ -33,29 +33,33 @@ function TimelineProviderInner({ children }: { children: ReactNode }) {
   });
 
   const setFrame = useCallback((compositionId: string, frame: number) => {
-    setState((prev) => ({
-      ...prev,
-      frames: { ...prev.frames, [compositionId]: frame },
-    }));
+    setState((prev) => {
+      if (prev.frames[compositionId] === frame) return prev;
+      return { ...prev, frames: { ...prev.frames, [compositionId]: frame } };
+    });
   }, []);
 
   const setPlaying = useCallback((playing: boolean) => {
-    setState((prev) => ({ ...prev, playing }));
+    setState((prev) => {
+      if (prev.playing === playing) return prev;
+      return { ...prev, playing };
+    });
   }, []);
 
   const setPlaybackRate = useCallback((playbackRate: number) => {
-    setState((prev) => ({ ...prev, playbackRate }));
+    setState((prev) => {
+      if (prev.playbackRate === playbackRate) return prev;
+      return { ...prev, playbackRate };
+    });
   }, []);
 
+  const value = useMemo<TimelineContextValue>(
+    () => ({ ...state, setFrame, setPlaying, setPlaybackRate }),
+    [state, setFrame, setPlaying, setPlaybackRate],
+  );
+
   return (
-    <TimelineContext.Provider
-      value={{
-        ...state,
-        setFrame,
-        setPlaying,
-        setPlaybackRate,
-      }}
-    >
+    <TimelineContext.Provider value={value}>
       {children}
     </TimelineContext.Provider>
   );

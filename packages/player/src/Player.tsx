@@ -76,17 +76,19 @@ function PlayerInner<T extends Record<string, unknown>>({
   // Sync player frame to timeline context
   useEffect(() => {
     timeline.setFrame("__player__", frame);
-  }, [frame, timeline]);
+  }, [frame]); // eslint-disable-line -- timeline.setFrame is stable (useCallback)
 
   useEffect(() => {
     timeline.setPlaying(playing);
-  }, [playing, timeline]);
+  }, [playing]); // eslint-disable-line
 
   useEffect(() => {
     timeline.setPlaybackRate(playbackRate);
-  }, [playbackRate, timeline]);
+  }, [playbackRate]); // eslint-disable-line
 
-  const getCurrentFrame = useCallback(() => frame, [frame]);
+  const frameRef = useRef(frame);
+  frameRef.current = frame;
+  const getCurrentFrame = useCallback(() => frameRef.current, []);
 
   const onFrameUpdate = useCallback(
     (nextFrame: number) => {
@@ -126,7 +128,12 @@ function PlayerInner<T extends Record<string, unknown>>({
     }
   }, [autoPlay, play]);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts — use refs to avoid re-registering on every frame
+  const seekToRef = useRef(seekTo);
+  seekToRef.current = seekTo;
+  const toggleRef = useRef(toggle);
+  toggleRef.current = toggle;
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -137,22 +144,22 @@ function PlayerInner<T extends Record<string, unknown>>({
       switch (e.code) {
         case "Space":
           e.preventDefault();
-          toggle();
+          toggleRef.current();
           break;
         case "ArrowRight":
           e.preventDefault();
-          seekTo(Math.min(lastFrame, frame + (e.shiftKey ? 5 : 1)));
+          seekToRef.current(Math.min(lastFrame, frameRef.current + (e.shiftKey ? 5 : 1)));
           break;
         case "ArrowLeft":
           e.preventDefault();
-          seekTo(Math.max(firstFrame, frame - (e.shiftKey ? 5 : 1)));
+          seekToRef.current(Math.max(firstFrame, frameRef.current - (e.shiftKey ? 5 : 1)));
           break;
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [toggle, seekTo, frame, firstFrame, lastFrame]);
+  }, [firstFrame, lastFrame]);
 
   const [scale, setScale] = useState(1);
 
