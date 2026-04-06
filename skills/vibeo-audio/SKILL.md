@@ -214,6 +214,46 @@ volumes = Array(duration).map((_, i) => volumeFunction(i + startsAt) * mediaVolu
 
 5. **The `<Video>` component** handles both visual rendering and audio sync. You don't need a separate `<Audio>` for a video file's audio track.
 
+6. **Video file server must support HTTP Range requests** — the `<Video>` component seeks via `el.currentTime`, which requires the browser to make Range requests (`206 Partial Content`). A server that only returns `200` for all requests will prevent seeking, causing the video to only play from the start. When serving video files from a custom static server, ensure it handles the `Range` header and returns `206` with `Content-Range` and `Accept-Ranges: bytes` headers.
+
+7. **`<Video>` causes flickering in the editor** — the `useMediaSync` hook seeks the video on every frame change (threshold ~10ms), which causes visible flickering during playback. For smoother editor playback when overlaying content on top of an mp4, use a custom `SyncedVideo` component that calls `el.play()` during playback and only seeks when drift exceeds 0.5s or when scrubbing:
+
+```tsx
+import { useRef, useEffect } from "react";
+import { useCurrentFrame, useVideoConfig, useTimelineContext } from "@vibeo/core";
+
+function SyncedVideo({ src, style }: { src: string; style?: React.CSSProperties }) {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const { playing } = useTimelineContext();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const lastFrameRef = useRef(-1);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    const expectedTime = frame / fps;
+
+    if (playing) {
+      if (el.paused) {
+        el.currentTime = expectedTime;
+        void el.play();
+      } else if (Math.abs(el.currentTime - expectedTime) > 0.5) {
+        el.currentTime = expectedTime;
+      }
+    } else {
+      if (!el.paused) el.pause();
+      if (frame !== lastFrameRef.current) el.currentTime = expectedTime;
+    }
+    lastFrameRef.current = frame;
+  }, [frame, fps, playing]);
+
+  return <video ref={videoRef} src={src} muted playsInline preload="auto" style={style} />;
+}
+```
+
+8. **Serving video for both editor and renderer** — the editor and renderer bundle to a temp directory and serve from there. External video files (mp4) are not included in the bundle. Run a separate static file server with Range request support and reference the video via a full URL (`http://localhost:PORT/file.mp4`), not a relative path.
+
 
 ---
 

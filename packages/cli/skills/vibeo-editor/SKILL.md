@@ -329,6 +329,10 @@ dispatch({
 
 7. **Subtitle inline editing** — double-click a subtitle cue in the timeline to edit text inline. Press Escape or click outside to save.
 
+8. **The editor bundles to a temp directory** (`/tmp/vibeo-editor-bundle-*`) and only serves files from there. Static assets like mp4 video files are NOT included. To use external video files, run a separate static file server with Range request support (HTTP 206) and reference them via full URL (`http://localhost:PORT/file.mp4`).
+
+9. **`<Video>` from `@vibeo/audio` causes flickering** when the editor scrubs or plays — the built-in `useMediaSync` hook micro-seeks on every frame. For smooth mp4 playback in the editor (e.g., overlaying text on a screencast), use a custom `SyncedVideo` component that lets the video play naturally during playback and only seeks on scrub. See the `@vibeo/audio` skill docs for the pattern.
+
 ---
 
 ## LLM & Agent Integration

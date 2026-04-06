@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { copyFile } from "node:fs/promises";
 import type { AudioMuxOptions } from "./types.js";
 
 /**
@@ -9,8 +10,9 @@ export async function stitchAudio(options: AudioMuxOptions): Promise<string> {
   const { videoPath, audioPaths, outputPath } = options;
 
   if (audioPaths.length === 0) {
-    // No audio to mux — just copy the video
-    return videoPath;
+    // No audio to mux — copy the video to the final output path
+    await copyFile(videoPath, outputPath);
+    return outputPath;
   }
 
   const args: string[] = ["-y"];

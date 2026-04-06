@@ -295,6 +295,14 @@ import type {
 
 6. **`pixelFormat: "yuv420p"`** is required for most players to handle h264/h265 correctly.
 
+7. **`--quality` is passed as CRF directly to FFmpeg** — for h264/h265, CRF ranges 0 (lossless) to 51 (worst). The default `--quality 80` produces extremely pixelated output because CRF 80 is clamped to 51. **Use `--quality 18` for visually lossless quality**, or `--quality 23` for a good size/quality trade-off.
+
+8. **Rendering compositions with embedded `<Video>` mp4 files** — the renderer captures frame-by-frame screenshots in headless Chromium. For `<Video>` to seek correctly during render, the video server must support HTTP Range requests (206 responses). Use a static file server with Range support and reference the video via `http://localhost:PORT/file.mp4`.
+
+9. **Use `node_modules/.bin/vibeo` instead of `bunx @vibeo/cli`** — `bunx` may resolve a globally cached CLI version that doesn't include local patches or the correct node_modules. Using the local binary ensures the bundler uses your project's dependencies.
+
+10. **The CLI hardcodes `durationInFrames: 300`** — the render command does not yet read the composition's actual duration from the bundle. For compositions longer than 300 frames, use `--frames 0-N` to specify the full frame range explicitly.
+
 
 ---
 

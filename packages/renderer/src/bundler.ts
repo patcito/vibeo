@@ -87,16 +87,25 @@ import { VibeoRoot, useCompositionContext } from "@vibeo/core";
  */
 function CompositionPlayer() {
   const { compositions } = useCompositionContext();
+  const playerRef = React.useRef<any>(null);
 
-  // Derive comp directly during render — no useEffect delay
   const hash = window.location.hash.slice(1);
   let comp: any = null;
   if (hash && compositions.has(hash)) {
     comp = compositions.get(hash);
   } else if (compositions.size > 0) {
-    // Get first value from map
     for (const v of compositions.values()) { comp = v; break; }
   }
+
+  // Expose vibeo_setFrame bridge for the renderer's seekToFrame()
+  React.useEffect(() => {
+    if (playerRef.current) {
+      (window as any).vibeo_setFrame = (frame: number, _compositionId: string) => {
+        playerRef.current?.seekTo(frame);
+      };
+      (window as any).vibeo_ready = true;
+    }
+  });
 
   if (!comp) {
     return React.createElement("div", {
@@ -105,14 +114,15 @@ function CompositionPlayer() {
   }
 
   return React.createElement(Player, {
+    ref: playerRef,
     component: comp.component,
     durationInFrames: comp.durationInFrames,
     compositionWidth: comp.width,
     compositionHeight: comp.height,
     fps: comp.fps,
-    controls: true,
-    loop: true,
-    autoPlay: true,
+    controls: false,
+    loop: false,
+    autoPlay: false,
     style: { width: "100vw", height: "100vh" },
     inputProps: comp.defaultProps,
   });
@@ -128,8 +138,6 @@ function PreviewApp() {
 const container = document.getElementById("root")!;
 const root = createRoot(container);
 root.render(React.createElement(PreviewApp));
-
-window.vibeo_ready = true;
 `,
   );
 
